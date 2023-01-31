@@ -3,10 +3,10 @@
     <header>
       <Publicity v-show="!running" />
       <el-button class="res" type="text" @click="showResult = true">
-        抽奖结果
+        Winners
       </el-button>
       <el-button class="con" type="text" @click="showConfig = true">
-        抽奖配置
+        Settings
       </el-button>
     </header>
     <div id="main" :class="{ mask: showRes }"></div>
@@ -27,7 +27,12 @@
     </div>
     <transition name="bounce">
       <div id="resbox" v-show="showRes">
-        <p @click="showRes = false">{{ categoryName }}抽奖结果：</p>
+        <p @click="
+              () => {
+                clostResimage();
+              }
+            ">{{ categoryName }}抽奖结果：</p>
+        <!-- @click="showRes = false" -->
         <div class="container">
           <span
             v-for="item in resArr"
@@ -35,7 +40,12 @@
             class="itemres"
             :style="resCardStyle"
             :data-id="item"
-            @click="showRes = false"
+            @click="
+              () => {
+                clostResimage();
+              }
+            "
+            
             :class="{
               numberOver:
                 !!photos.find((d) => d.id === item) ||
@@ -93,7 +103,7 @@
     <Result :visible.sync="showResult"></Result>
 
     <span class="copy-right">
-      Copyright©zhangyongfeng5350@gmail.com
+      Copyright©ensonmarket.com
     </span>
 
     <audio
@@ -115,6 +125,7 @@ import LotteryConfig from '@/components/LotteryConfig';
 import Publicity from '@/components/Publicity';
 import Tool from '@/components/Tool';
 import bgaudio from '@/assets/bg.mp3';
+import bgaudio1 from '@/assets/stop.mp3';
 import beginaudio from '@/assets/begin.mp3';
 import {
   getData,
@@ -316,10 +327,17 @@ export default {
     closeRes() {
       this.showRes = false;
     },
+    clostResimage(){
+      this.showRes = false;
+      this.audioSrc = bgaudio;
+      this.loadAudio();
+    },
     toggle(form) {
+     
       const { speed, config } = this;
       if (this.running) {
-        this.audioSrc = bgaudio;
+         console.log("form----------------", this.showRes)
+        this.audioSrc = bgaudio1;
         this.loadAudio();
 
         window.TagCanvas.SetSpeed('rootcanvas', speed());
@@ -329,11 +347,12 @@ export default {
           this.reloadTagCanvas();
         });
       } else {
+         console.log("form------------1----",form)
         this.showRes = false;
         if (!form) {
           return;
         }
-
+ console.log("form------------2----",form)
         this.audioSrc = beginaudio;
         this.loadAudio();
 
@@ -374,7 +393,7 @@ export default {
 #root {
   height: 100%;
   position: relative;
-  background-image: url('./assets/bg1.jpg');
+  background-image: url('./assets/bg2.jpg');
   background-size: 100% 100%;
   background-position: center center;
   background-repeat: no-repeat;
@@ -394,9 +413,11 @@ export default {
       z-index: 9999;
       &.con {
         right: 20px;
+        color: #fdcb79;
       }
       &.res {
         right: 100px;
+        color: #fdcb79;
       }
     }
   }
@@ -414,14 +435,16 @@ export default {
     .iconfont {
       position: relative;
       left: 1px;
+      color:#fdcb79 !important;
     }
   }
   .copy-right {
     position: absolute;
     right: 0;
     bottom: 0;
-    color: #ccc;
-    font-size: 12px;
+    color: #fff;
+    font-size: 20x;
+    font-weight: 900;
   }
   .bounce-enter-active {
     animation: bounce-in 1.5s;
@@ -442,7 +465,7 @@ export default {
   transform: translateX(-50%) translateY(-50%);
   text-align: center;
   p {
-    color: red;
+    color: #fdcb79;
     font-size: 50px;
     line-height: 120px;
   }

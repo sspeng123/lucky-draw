@@ -1,16 +1,12 @@
 <template>
   <div id="tool">
-    <el-button @click="startHandler" type="primary" size="mini">{{
-      running ? '停止' : '开始'
+    <el-button @click="startHandler" type="primary" size="mini"  class="bt">{{
+      running ? '    End   ' : '  Start  '
     }}</el-button>
-    <el-button size="mini" @click="showRemoveoptions = true">
-      重置
-    </el-button>
-    <el-button size="mini" @click="showImport = true">
-      导入名单
-    </el-button>
-    <el-button size="mini" @click="showImportphoto = true">
-      导入照片
+    <el-button size="mini" @click="showRemoveoptions = true"  class="bt"> Reset </el-button>
+    <el-button size="mini" @click="showImport = true"  class="bt"> List </el-button>
+    <el-button size="mini" @click="showImportphoto = true"  class="bt">
+      Photo
     </el-button>
     <el-dialog
       :append-to-body="true"
@@ -42,12 +38,35 @@
             &nbsp;名
           </span>
         </el-form-item>
+        <el-form-item label=" " v-if="form.category">
+          <span>
+            <img
+              :src="this.getInfo(form.category, 'image')"
+              :width="100"
+              :height="100"
+            />
+          </span>
+          <div>
+             <span :style="{ marginLeft: '0px' }">
+            
+            <span class="colorred">{{ this.getInfo(form.category, 'note') }}</span>
+           
+          </span>
+          </div>
+          <div>
+             <span :style="{ marginLeft: '0px' }">
+            
+            <span class="colorred">{{ this.getInfo(form.category, 'notezh') }}</span>
+           
+          </span>
+          </div>
+        </el-form-item>
 
         <el-form-item label="抽取方式">
           <el-select v-model="form.mode" placeholder="请选取本次抽取方式">
+            <el-option label="一次抽取完" :value="0"></el-option>
             <el-option label="抽1人" :value="1"></el-option>
             <el-option label="抽5人" :value="5"></el-option>
-            <el-option label="一次抽取完" :value="0"></el-option>
             <el-option label="自定义" :value="99"></el-option>
           </el-select>
         </el-form-item>
@@ -137,7 +156,7 @@ import {
   configField,
   listField,
   resultField,
-  conversionCategoryName
+  conversionCategoryNameData,
 } from '@/helper/index';
 import Importphoto from './Importphoto';
 import { database, DB_STORE_NAME } from '@/helper/db';
@@ -145,13 +164,13 @@ import { database, DB_STORE_NAME } from '@/helper/db';
 export default {
   props: {
     running: Boolean,
-    closeRes: Function
+    closeRes: Function,
   },
   computed: {
     config: {
       get() {
         return this.$store.state.config;
-      }
+      },
     },
     remain() {
       return (
@@ -170,17 +189,21 @@ export default {
         if (this.config.hasOwnProperty(key)) {
           const item = this.config[key];
           if (item > 0) {
-            let name = conversionCategoryName(key);
-            name &&
+            let obj = conversionCategoryNameData(key);
+            console.log(obj);
+            obj &&
               options.push({
-                label: name,
-                value: key
+                label: obj.name,
+                value: key,
+                image: obj.image,
+                notezh: obj.notezh,
+                note: obj.note,
               });
           }
         }
       }
       return options;
-    }
+    },
   },
   components: { Importphoto },
   data() {
@@ -192,11 +215,11 @@ export default {
       removeInfo: { type: 0 },
       form: {
         category: '',
-        mode: 1,
+        mode: 0,
         qty: 1,
-        allin: false
+        allin: false,
       },
-      listStr: ''
+      listStr: '',
     };
   },
   watch: {
@@ -204,7 +227,7 @@ export default {
       if (!v) {
         this.removeInfo.type = 0;
       }
-    }
+    },
   },
   methods: {
     resetConfig() {
@@ -212,7 +235,7 @@ export default {
       this.$confirm('此操作将重置所选数据，是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       })
         .then(() => {
           switch (type) {
@@ -246,7 +269,7 @@ export default {
           this.showRemoveoptions = false;
           this.$message({
             type: 'success',
-            message: '重置成功!'
+            message: '重置成功!',
           });
 
           this.$nextTick(() => {
@@ -256,9 +279,17 @@ export default {
         .catch(() => {
           this.$message({
             type: 'info',
-            message: '已取消'
+            message: '已取消',
           });
         });
+    },
+    getInfo(key, k) {
+      let obj = conversionCategoryNameData(key);
+      if (k == 'image') {
+        return '/images/' + obj[k];
+      } else {
+        return obj[k];
+      }
     },
     onSubmit() {
       if (!this.form.category) {
@@ -300,7 +331,7 @@ export default {
       const list = [];
       const rows = listStr.split('\n');
       if (rows && rows.length > 0) {
-        rows.forEach(item => {
+        rows.forEach((item) => {
           const rowList = item.split(/\t|\s/);
           if (rowList.length >= 2) {
             const key = Number(rowList[0].trim());
@@ -308,7 +339,7 @@ export default {
             key &&
               list.push({
                 key,
-                name
+                name,
               });
           }
         });
@@ -317,20 +348,20 @@ export default {
 
       this.$message({
         message: '保存成功',
-        type: 'success'
+        type: 'success',
       });
       this.showImport = false;
       this.$nextTick(() => {
         this.$emit('resetConfig');
       });
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss">
 #tool {
   position: fixed;
-  width: 60px;
+  width: 80px;
   top: 50%;
   right: 20px;
   transform: translateY(-50%);
@@ -367,5 +398,13 @@ export default {
   .el-radio.is-bordered {
     margin-bottom: 10px;
   }
+}
+.bt{
+  width:80px;
+  
+}
+.el-button--primary {
+  background: #fdcb79 !important;
+  border: #fdcb79 !important;
 }
 </style>

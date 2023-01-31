@@ -4,33 +4,27 @@ import {
   setData,
   resultField,
   newLotteryField,
-  listField
+  listField,
+  confignote,
+  configList,
 } from '@/helper/index';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    config: {
-      name: '年会抽奖',
-      number: 70,
-      firstPrize: 1
-    },
+    config: confignote,
     result: {
-      firstPrize: []
+      //firstPrize: []
     },
-    newLottery: [],
+    newLottery: configList,
     list: [],
     photos: []
   },
   mutations: {
     setClearConfig(state) {
-      state.config = {
-        name: '年会抽奖',
-        number: 70,
-        firstPrize: 1
-      };
-      state.newLottery = [];
+      state.config = confignote;
+      state.newLottery = configList;
     },
     setClearList(state) {
       state.list = [];
@@ -40,21 +34,18 @@ export default new Vuex.Store({
     },
     setClearResult(state) {
       state.result = {
-        firstPrize: []
+        //firstPrize: []
       };
     },
     setClearStore(state) {
-      state.config = {
-        name: '年会抽奖',
-        number: 70,
-        firstPrize: 1
-      };
+      state.config = confignote;
       state.result = {
-        firstPrize: []
+        //firstPrize: []
       };
-      state.newLottery = [];
+      state.newLottery = configList;
       state.list = [];
       state.photos = [];
+      setData(newLotteryField, state.newLottery);
     },
     setConfig(state, config) {
       state.config = config;
