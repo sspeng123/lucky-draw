@@ -289,6 +289,14 @@ export default {
     loadAudio() {
       this.$el.querySelector('#audiobg').load();
       this.$nextTick(() => {
+         this.$el.querySelector('#audiobg').loop = true;
+        this.$el.querySelector('#audiobg').play();
+      });
+    },
+    loadAudio1() {
+      this.$el.querySelector('#audiobg').load();
+      this.$nextTick(() => {
+        this.$el.querySelector('#audiobg').loop = false;
         this.$el.querySelector('#audiobg').play();
       });
     },
@@ -338,7 +346,7 @@ export default {
       if (this.running) {
          console.log("form----------------", this.showRes)
         this.audioSrc = bgaudio1;
-        this.loadAudio();
+        this.loadAudio1();
 
         window.TagCanvas.SetSpeed('rootcanvas', speed());
         this.showRes = true;
